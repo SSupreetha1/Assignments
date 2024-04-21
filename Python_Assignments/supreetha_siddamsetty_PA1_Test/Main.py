@@ -4,8 +4,8 @@ import HospitalRecords
 
 class Main:
 
-    input_path = sys.argv[1]
-    user_roles_path = sys.argv[2]
+    input_path = sys.argv[2]
+    user_roles_path = sys.argv[1]
 
     # creating object for Hospitalrecords class
 
