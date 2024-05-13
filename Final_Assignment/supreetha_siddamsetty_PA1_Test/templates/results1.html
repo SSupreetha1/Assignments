@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <h1>Management Reports</h1>
+    
+    {% for action, plot_data in results.items() %}
+        <h2>{{ action }}</h2> 
+        {% if plot_data %}
+            <img src="data:image/png;base64,{{ plot_data }}" alt="Plot for {{ action }}">
+        {% else %}
+            <p>No data available for {{ action }}.</p>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Clinician/Nurse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #581845;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-style: italic;
+            color: #FFFFFF;
+        }
+        .username, .role {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+        .action-label {
+            font-size: 18px;
+            color: #1A1115;
+        }
+        .action-radio {
+            display: inline-block;
+            margin: 5px 10px;
+        }
+        .action-submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .action-submit:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, Clinician/Nurse!</h2>
+        <h2 class="username">Username: {{ username }}</h2>
+        <h2 class="role">Role: {{ role }}</h2>
+    </div>
+    <form action="/action" method="post">
+        <input type="hidden" name="role" value="{{ role }}">
+        <h3 class="action-label">Choose an action:</h3>
+        <div class="action-radio">
+            <input type="radio" id="add_patient" name="action" value="Add_patient">
+            <label for="add_patient"><i class="fas fa-user-plus"></i> Add Patient</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="remove_patient" name="action" value="Remove_patient">
+            <label for="remove_patient"><i class="fas fa-user-minus"></i> Remove Patient</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="retrieve_patient" name="action" value="Retrieve_patient">
+            <label for="retrieve_patient"><i class="fas fa-search"></i> Retrieve Patient</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="count_visits" name="action" value="Count_visits">
+            <label for="count_visits"><i class="fas fa-chart-bar"></i> Count Visits</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="exit" name="action" value="Exit">
+            <label for="exit"><i class="fas fa-sign-out-alt"></i> Exit</label>
+        </div>
+        <br>
+        <br>
+        <div class="patient-id-input" style="display: none;">
+            <label for="patient_id">Enter Patient ID:</label>
+            <input type="text" id="patient_id" name="patient_id" required>
+            <button type="button" id="check_patient" style="display: none;">Check Patient</button> <!-- Button to check patient existence -->
+        </div>
+        <div class="date-id-input" style="display: none;">
+            <label for="date_id">Enter Visit Date(YYYY-MM-DD):</label>
+            <input type="text" id="date_id" name="date_id" required>
+        </div>
+        <div class="retrieve-options" style="display: none;">
+            <h3 class="action-label">Retrieve:</h3>
+            <div class="action-radio">
+                <input type="radio" id="retrieve_age" name="retrieve_option" value="Age">
+                <label for="retrieve_age">Age</label>
+            </div>
+            <div class="action-radio">
+                <input type="radio" id="retrieve_visits" name="retrieve_option" value="Visits">
+                <label for="retrieve_visits">Visits</label>
+            </div>
+            <div class="action-radio">
+                <input type="radio" id="retrieve_all" name="retrieve_option" value="All">
+                <label for="retrieve_all">All</label>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="additional-fields" style="display: none;">
+            <label for="Race">Race:</label>
+            <input type="text" id="Race" name="Race">
+            <br><br>
+            <label for="Ethnicity">Ethnicity:</label>
+            <input type="text" id="Ethnicity" name="Ethnicity">
+            <br><br>
+            <label for="Gender">Gender:</label>
+            <input type="text" id="Gender" name="Gender">
+            <br><br>
+            <label for="Age">Age:</label>
+            <input type="text" id="Age" name="Age">
+            <br><br>
+            <label for="Insurance">Insurance:</label>
+            <input type="text" id="Insurance" name="Insurance">
+            <br><br>
+            <label for="Zip_code">Zip Code:</label>
+            <input type="text" id="Zip_code" name="Zip_code">
+            <br><br>
+            <label for="Chief_complaint">Chief Complaint:</label>
+            <input type="text" id="Chief_complaint" name="Chief_complaint">
+            <br><br>
+            <label for="Note_type">Note Type:</label>
+            <input type="text" id="Note_type" name="Note_type">
+        </div>
+        <button type="submit" class="action-submit">Submit</button>
+    </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var addPatientRadio = document.getElementById("add_patient");
+            var retrievePatientRadio = document.getElementById("retrieve_patient");
+            var removePatientRadio = document.getElementById("remove_patient");
+            var countPatientVisitsRadio = document.getElementById("count_visits");
+            var dateIdInput = document.querySelector(".date-id-input");
+            var checkPatientButton = document.getElementById("check_patient"); // Button to check patient existence
+
+            var patientIdInput = document.querySelector(".patient-id-input");
+            var retrieveOptions = document.querySelector(".retrieve-options");
+
+            var otherRadios = document.querySelectorAll('input[name="action"]:not(#retrieve_patient)');
+
+            otherRadios.forEach(function(radio) {
+                radio.addEventListener("change", function() {
+                    patientIdInput.style.display = "none";
+                    dateIdInput.style.display = "none";
+                    retrieveOptions.style.display = "none";
+                    checkPatientButton.style.display = "none"; // Hide the "Check Patient" button for non-"Add Patient" actions
+                });
+            });
+
+            retrievePatientRadio.addEventListener("change", function() {
+                if (this.checked && this.value === "Retrieve_patient") {
+                    patientIdInput.style.display = "block";
+                    retrieveOptions.style.display = "block";
+                    dateIdInput.style.display = "none";
+                    checkPatientButton.style.display = "none"; // Hide the "Check Patient" button for "Retrieve Patient" action
+                } else {
+                    patientIdInput.style.display = "none";
+                    retrieveOptions.style.display = "none";
+                }
+            });
+
+            removePatientRadio.addEventListener("change", function() {
+                if (this.checked && this.value === "Remove_patient") {
+                    patientIdInput.style.display = "block";
+                    checkPatientButton.style.display = "none"; // Hide the "Check Patient" button for "Remove Patient" action
+                } else {
+                    patientIdInput.style.display = "none";
+                }
+            });
+
+            countPatientVisitsRadio.addEventListener("change", function() {
+                if (this.checked && this.value === "Count_visits") {
+                    dateIdInput.style.display = "block";
+                    checkPatientButton.style.display = "none"; // Hide the "Check Patient" button for "Count Visits" action
+                } else {
+                    dateIdInput.style.display = "none";
+                }
+            });
+
+            addPatientRadio.addEventListener("change", function() {
+                if (this.checked && this.value === "Add_patient") {
+                    patientIdInput.style.display = "block";
+                    checkPatientButton.style.display = "inline-block"; // Display the "Check Patient" button for "Add Patient" action
+                } else {
+                    patientIdInput.style.display = "none";
+                }
+            });
+
+            checkPatientButton.addEventListener("click", function() {
+                var patientId = document.getElementById("patient_id").value;
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText); // Parse the JSON response
+                        var patientExists = response; // Get the value indicating whether the patient exists
+
+                        if (patientExists) {
+                            document.querySelector(".date-id-input").style.display = "block";
+                        } else {
+                            document.querySelector(".date-id-input").style.display = "block";
+                            document.querySelector(".additional-fields").style.display = "block";
+                        }
+                    }
+                };
+                xhr.open("POST", "/check_patient_exists");
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr.send(JSON.stringify({ patient_id: patientId }));
+            });
+        });
+    </script>
+</body>
+</html>

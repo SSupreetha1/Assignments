@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #581845;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-style: italic;
+            color: #FFFFFF;
+        }
+        .username, .role {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+        }
+        .action-label {
+            font-size: 18px;
+            color: #1A1115;
+        }
+        .action-radio {
+            display: inline-block;
+            margin: 5px 10px;
+        }
+        .action-submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .action-submit:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, Management!</h2>
+        <h2 class="username">Username: {{ username }}</h2>
+        <h2 class="role">Role: Management</h2>
+    </div>
+    <form action="/action" method="post">
+        <input type="hidden" name="role" value="{{ role }}">
+        <h3 class="action-label">Choose an action:</h3>
+        <div class="action-radio">
+            <input type="radio" id="visits_report" name="action" value="visits_report">
+            <label for="visits_report"><i class="fas fa-chart-line"></i> Visits Report</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="insurances_report" name="action" value="insurances_report">
+            <label for="insurances_report"><i class="fas fa-file-invoice-dollar"></i> Insurances Report</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="demographic_report" name="action" value="demographic_report">
+            <label for="demographic_report"><i class="fas fa-users"></i> Demographic Report</label>
+        </div>
+        <div class="action-radio">
+            <input type="radio" id="exit" name="action" value="Exit">
+            <label for="exit"><i class="fas fa-sign-out-alt"></i> Exit</label>
+        </div>
+        <br>
+        <br>
+        <button type="submit" class="action-submit">Submit</button>
+    </form>
+</body>
+</html>
