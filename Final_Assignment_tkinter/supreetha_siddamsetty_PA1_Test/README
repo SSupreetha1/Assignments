@@ -14,10 +14,10 @@ Key Features:
 Classes Overview:
 
 # Patient Class:
-This class is responsible for managing patient data, including demographics, insurance information, etc. It provides methods for adding, removing, and retrieving patient records.
+This class is responsible for managing patient data, including demographics, insurance information, etc. 
 
 # Visits Class:
-The Visits class tracks patient visits and relevant data. It also provides functionality to generate visit summaries based on specified parameters.
+The Visits class tracks patient visits and relevant data.
 
 # Utility Class:
 The Utility class houses utility functions required for various operations within the application, ensuring efficient execution of tasks.
@@ -27,9 +27,10 @@ The HospitalRecords class is the heart of the application. It integrates all fun
 
 Getting Started:
 
-Prerequisites:
-Python 3.x
-Tkinter library
+# Prerequisites:
+  
+ 1. Python 3.x
+ 2. Tkinter library
 
 Installation
 
