@@ -1,0 +1,73 @@
+# Hospital Record Management App
+
+This Hospital Record Management App is built using Python Tkinter. It offers a comprehensive solution for managing patient records, visits, and various utility functions within a hospital setting. The application is structured around different classes, each catering to specific functionalities.
+
+## Features
+
+- **Patient Class**: Contains patient-related data and methods for managing patient records.
+- **Visits Class**: Manages data related to patient visits and provides methods for visit summary generation.
+- **Utility Class**: Houses utility functions required for various operations within the application.
+- **HospitalRecords Class**: Integrates all actions like adding patients, removing patients, retrieving patient information, counting views, and temporal data analysis methods.
+
+## Classes Overview
+
+### Patient Class
+- Manages patient data including demographics, insurance information, etc.
+- Methods for adding, removing, and retrieving patient records.
+
+### Visits Class
+- Tracks patient visits and relevant data.
+- Generates visit summaries based on specified parameters.
+
+### Utility Class
+- Contains utility functions required for various operations.
+- Ensures efficient execution of tasks within the application.
+
+### HospitalRecords Class
+- Centralizes all functionalities related to patient management and record keeping.
+- Provides methods for adding, removing, and retrieving patient records.
+- Implements actions like counting views and generating temporal data summaries.
+
+## Usage
+
+To utilize this application, follow these steps:
+
+1. Clone the repository to your local machine.
+2. Ensure you have Python installed (python 3.X version).
+3. Switch to the virtual env by using the below command:  
+    source .venv/bin/activate
+4. Run the command pip install -r requirement.txt to install required libraries 
+5. Run the main Python script to launch the application, using the below command:
+    python Main.py 
+6. Use the graphical interface to login and perform various actions like 
+    add_patient, remove_patient, retrieve_patient, count_visits, and generating summaries.
+
+## Example Usage
+
+```python
+from hospital_records import HospitalRecords
+
+# Initialize HospitalRecords object
+hospital = HospitalRecords()
+
+# Add a patient
+hospital.add_patient(self,patient_id)
+  if this is an existing patient then, Visit_time is required.
+  if this is a new patient record the additional information will be asked as below:
+  Visit_time,Race,Ethnicity,Gender,Age, Insurance, Zip_code, Chief_complaint, Note_type
+
+# Remove a patient
+hospital.remove_patient(self,patient_id)
+
+# Retrieve patient information
+patient_info = hospital.retrieve_patient(self, patient_id, info_type)
+
+# Count views
+views_count = hospital.count_views()
+
+# Generate visit summary
+visit_summary = hospital.temporal_trend_hospital_visits(data)
+
+# Perform temporal data analysis
+insurance_summary = hospital.temporal_trend_insurance_types(data)
+demographic_data = hospital.temporal_trend_demographics(data, demographic)
