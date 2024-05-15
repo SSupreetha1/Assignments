@@ -1,41 +1,51 @@
+                              Hospital Record Management App
 
-Hospital Record Management App
-This Hospital Record Management App is a robust and comprehensive solution built using Python's Tkinter library. It is designed to streamline the process of managing patient records, visits, and various utility functions within a hospital setting. The application is structured around different classes, each catering to specific functionalities, ensuring a clean and maintainable codebase.
+This Hospital Record Management App is a robust and comprehensive solution built using Python's Tkinter library. 
+It is designed to streamline the process of managing patient records, visits, and various utility functions within a hospital setting. 
+The application is structured around different classes, each catering to specific functionalities, ensuring a clean and maintainable codebase.
 
-<img alt="Hospital Record Management App" src="https://example.com/link-to-your-app-image">
-Key Features
-Patient Management: Add, remove, and retrieve patient records with ease.
-Visit Tracking: Keep track of patient visits and generate summaries based on specified parameters.
-Utility Functions: A set of utility functions to ensure efficient execution of tasks within the application.
-Temporal Data Analysis: Analyze patient visit trends over time, insurance types, and demographics.
-Classes Overview
-Patient Class
+Key Features:
+
+# Patient Management: Add, remove, and retrieve patient records with ease.
+# Visit Tracking: Keep track of patient visits and generate summaries based on specified parameters.
+# Utility Functions: A set of utility functions to ensure efficient execution of tasks within the application.
+# Temporal Data Analysis: Analyze patient visit trends over time, insurance types, and demographics.
+
+Classes Overview:
+
+# Patient Class:
 This class is responsible for managing patient data, including demographics, insurance information, etc. It provides methods for adding, removing, and retrieving patient records.
 
-Visits Class
+# Visits Class:
 The Visits class tracks patient visits and relevant data. It also provides functionality to generate visit summaries based on specified parameters.
 
-Utility Class
+# Utility Class:
 The Utility class houses utility functions required for various operations within the application, ensuring efficient execution of tasks.
 
-HospitalRecords Class
+# HospitalRecords Class:
 The HospitalRecords class is the heart of the application. It integrates all functionalities related to patient management and record keeping. It provides methods for adding, removing, and retrieving patient records, counting views, and generating temporal data summaries.
 
-Getting Started
-Prerequisites
+Getting Started:
+
+Prerequisites:
 Python 3.x
 Tkinter library
-Installation
-Clone the repository to your local machine.
-Switch to the virtual environment:
-source .venv/bin/activate
-Install the required libraries:
-pip install -r requirements.txt
-Usage
-Run the main Python script to launch the application:
-python Main.py
 
-Use the graphical interface to login and perform various actions like adding patients, removing patients, retrieving patient information, counting visits, and generating summaries.
+Installation
+
+1. Clone the repository to your local machine.
+2. Switch to the virtual environment:
+    source .venv/bin/activate
+3. Install the required libraries:
+    pip install -r requirements.txt
+
+Usage:
+
+1. Run the main Python script to launch the application:
+    python Main.py
+
+2. Use the graphical interface to login and perform various actions like 
+    add_patient, remove_patient, retriev_patient, count_visits, and generating summaries.
 
 from hospital_records import HospitalRecords
 
