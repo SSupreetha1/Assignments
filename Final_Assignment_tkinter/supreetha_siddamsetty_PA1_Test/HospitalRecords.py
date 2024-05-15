@@ -1,172 +1,126 @@
 import csv
 import datetime
 import pandas as pd
-pd.__version__ 
 import matplotlib.pyplot as plt
-import Patient
-import Utility
-import os
-import base64
-import io 
+from Patient import Patient
+from Utility import Utility
+
 
 class HospitalRecords:
     def __init__(self):
-        self.records = []
-           
+        self.records = {}
+
     def load_records(self, filename):
-        with open(filename, "r") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                patient = Patient.Patient(
-                    row["Patient_ID"],
-                    row["Visit_time"],
-                    row["Visit_ID"],
-                    row["Visit_department"],
-                    row["Race"],
-                    row["Ethnicity"],
-                    row["Gender"],
-                    int(row["Age"]),
-                    row["Insurance"],
-                    row["Zip_code"],
-                    row["Chief_complaint"],
-                )
-                patient.add_visit(
-                    row["Visit_time"],
-                    row["Visit_department"],
-                    row["Chief_complaint"],
-                    row["Note_type"],
-                )
-                self.records.append(patient)
+        try:
+            with open(filename, "r") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    self.records[row["Patient_ID"]] = row
+        except FileNotFoundError:
+            print("File not found.")
+        except Exception as e:
+            print(f"An error occurred while loading records: {str(e)}")
+
+    def remove_patient(self, patient_id):
+        if patient_id in self.records:
+            del self.records[patient_id]
+            return f"Patient record with id: {patient_id} is removed successfully."
+        else:
+            return "Patient record not found"
 
     def retrieve_patient(self, patient_id, info_type):
-        patient_found = False
-        patient_info = {}
-        for patient in self.records:
-            if patient_id == patient.patient_id:
-                patient_found = True
-                if info_type == "Age":
-                    patient_info["Patient Age"] = patient.Age
-                elif info_type == "Visits":
-                    visits_info = []
-                    for visit in patient.visits:
-                        visits_info.append({"Visit Time": visit.visit_time, "Visit Department": visit.Visit_department})
-                    patient_info["Visits"] = visits_info
-                elif info_type == "All":
-                    # Collect all the relevant patient attributes
-                    patient_info["Age"] = patient.Age
-                    patient_info["Race"] = patient.Race
-                    patient_info["Ethnicity"] = patient.Ethnicity
-                    patient_info["Gender"] = patient.Gender
-                    patient_info["Insurance"] = patient.Insurance
-                    patient_info["Zip Code"] = patient.Zip_code
-                    patient_info["Visited Departments"] = patient.Visit_department
-                    patient_info["Chief Complaint"] = patient.Chief_complaint
-                    visits_info = []
-                    for visit in patient.visits:
-                        visits_info.append({"Visit Time": visit.visit_time, "Visit Department": visit.Visit_department})
-                    patient_info["Visits"] = visits_info
-
-        if not patient_found:
-            patient_info["Error"] = "Patient ID not found."
-
-        return patient_info
-
-
-# Similarly, modify other methods like add_patient, remove_patient, count_visits, etc. to take input parameters from Flask and return results accordingly.
-
-    def add_visit_to_existing_patient(self, patient_id,Visit_time):
-        # visit_time = Utility.Utility.getValidDate(self,Visit_time)
-        visit_id = Utility.Utility.generate_visit_id(self)
-        new_visit = {
-            "Patient_ID": patient_id,
-            "Visit_ID": visit_id,
-            "Visit_time": Visit_time,
+        info_retrievers = {
+            "Age": lambda patient: {"Patient Age": patient["Age"]},
+            "Visits": lambda patient: {
+                "Visits": {
+                    "Visit Time": patient["Visit_time"],
+                    "Visit Department": patient["Visit_department"],
+                }
+            },
+            "All": lambda patient: patient,
         }
-        self.records.append(new_visit)
-        return  new_visit
-
-    def collect_and_add_new_patient(self, patient_id,Visit_time,Race,Ethnicity,Gender,Age, Insurance, Zip_code, Chief_complaint, Note_type):
-        patient_data = {
-            "Patient_ID": patient_id,
-            "Visit_time": Visit_time,
-            "Race": Race,
-            "Ethnicity": Ethnicity,
-            "Gender": Gender,
-            "Age": Age,
-            "Insurance": Insurance,
-            "Zip_code": Zip_code,
-            "Chief_complaint": Chief_complaint,
-            "Note_type": Note_type,
-        }
-        visit_id = Utility.Utility.generate_visit_id(self)
-        note_id = Utility.Utility.generate_visit_id(self)
-        patient_data["Visit_ID"] = visit_id
-        patient_data["Note_ID"] = note_id
-        self.records.append(patient_data)
-        return patient_data
-
-    def check_patient_existence(self,patient_id):
-        for record in self.records:
-            if record.patient_id == patient_id:
-                return True
-        else:
-            return False
-
-    def remove_patient(self,patient_id):
+        patient = self.records.get(patient_id)
+        if patient is None:
+            return {"Error": "Patient ID not found."}
         try:
-            self.records.remove(
-                next(
-                    record for record in self.records if record.patient_id == patient_id
-                )
-            )
-            
-            return "Patient record with id: {} is removed successfully.".format(patient_id)
-            
-        except StopIteration:
-            return "Patient record not found"
+            return info_retrievers[info_type](patient)
+        except KeyError:
+            return {"Error": f"Info type {info_type} not found."}
 
     def count_visits(self, date_str):
         try:
             target_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
-            count = 0  # Initialize the count
-            for record in self.records:
-                if datetime.datetime.strptime(record.Visit_time, "%Y-%m-%d").date() == target_date:
-                    count += 1
-            if count >= 1:
-                return {"Visits for the date - {}".format(date_str): "{}".format( count)}
-            else:
-                return {"No Visits found for this date:": " {}".format(target_date)}
         except ValueError:
             return {"error_message": "Invalid date format."}
+        count = sum(
+            1
+            for record in self.records.values()
+            if datetime.datetime.strptime(record["Visit_time"], "%Y-%m-%d").date()
+            == target_date
+        )
+        return (
+            {"Visits for the date - {}".format(date_str): "{}".format(count)}
+            if count
+            else {"No Visits found for this date:": " {}".format(target_date)}
+        )
 
+    def get_patient(self, patient_id):
+        return self.records.get(patient_id)
 
-    def authenticate_user(user_roles_path):
-        try:
-            with open(user_roles_path, "r") as file:
-                reader = csv.DictReader(file)
-                user_roles = {
-                    row["username"]: {"password": row["password"], "role": row["role"]}
-                    for row in reader
-                }
-        except FileNotFoundError:
-            print("User roles file not found.")
-            return None, None
-        except csv.Error:
-            print("Error reading user roles file.")
-            return None, None
-        username = input("Enter username: ")
-        password = input("Enter password: ")
+    def check_patient_existence(self, patient_id):
+        return patient_id in self.records
 
-        if username in user_roles:
-            if password == user_roles[username]["password"]:
-                return username, user_roles[username]["role"]
-        else:
-            print("Invalid username or password. Please try again.")
-            return None, None
+    def add_visit_to_existing_patient(self, patient_id, visit_time):
+        visit_id = Utility.generate_visit_id(self)
+        new_visit = {
+            "Patient_ID": patient_id,
+            "Visit_ID": visit_id,
+            "Visit_time": visit_time,
+        }
+        if patient_id in self.records:
+            try:
+                self.records[patient_id]["visits"].append(new_visit)
+            except KeyError:
+                self.records[patient_id]["visits"] = [new_visit]
+        return new_visit
 
+    def collect_and_add_new_patient(
+        self,
+        patient_id,
+        visit_time,
+        race,
+        ethnicity,
+        gender,
+        age,
+        insurance,
+        zip_code,
+        chief_complaint,
+        note_type,
+    ):
+        visit_id = Utility.generate_visit_id(self)
+        note_id = Utility.generate_visit_id(self)
+        patient_data = {
+            "Patient_ID": patient_id,
+            "Visit_time": visit_time,
+            "Race": race,
+            "Ethnicity": ethnicity,
+            "Gender": gender,
+            "Age": age,
+            "Insurance": insurance,
+            "Zip_code": zip_code,
+            "Chief_complaint": chief_complaint,
+            "Note_type": note_type,
+            "Visit_ID": visit_id,
+            "Note_ID": note_id,
+            "visits": [],
+        }
+        self.records[patient_id] = patient_data
+        return patient_data
+
+    @staticmethod
     def load_hospital_data(data_path):
         try:
-            data = pd.read_csv(data_path)
+            data = pd.read_csv(data_path, error_bad_lines=False)
             return data
         except FileNotFoundError:
             print("Hospital data file not found.")
@@ -174,11 +128,8 @@ class HospitalRecords:
         except pd.errors.EmptyDataError:
             print("Hospital data file is empty.")
             return None
-        except pd.errors.ParserError:
-            print("Error reading hospital data file.")
-            return None
-        
 
+    @staticmethod
     def temporal_trend_hospital_visits(data):
         try:
             data["Visit_time"] = pd.to_datetime(data["Visit_time"])
@@ -197,9 +148,9 @@ class HospitalRecords:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
+    @staticmethod
     def temporal_trend_insurance_types(data):
         try:
-            # Count occurrences of each insurance type
             insurance_counts = data["Insurance"].value_counts()
             plt.figure(figsize=(10, 6))
             insurance_counts.plot(kind="bar")
@@ -214,9 +165,9 @@ class HospitalRecords:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
+    @staticmethod
     def temporal_trend_demographics(data, demographic):
         try:
-            # for demographic in demographics:
             demographic_counts = data[demographic].value_counts()
             plt.figure(figsize=(10, 6))
             demographic_counts.plot(kind="bar")
@@ -227,6 +178,6 @@ class HospitalRecords:
             plt.grid(True)
             plt.show()
         except KeyError:
-            print("One or more demographic columns not found in hospital data.")
+            print(f"{demographic} column not found in hospital data.")
         except Exception as e:
             print(f"An error occurred: {str(e)}")
